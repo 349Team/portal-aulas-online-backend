@@ -8,13 +8,14 @@ build:
 start:
 	cp .env.dev .env
 	docker-compose down
-	docker-compose up -d db
+	docker-compose up -d db 
 	sleep 3.0
 	docker-compose up api
 
 # restaura todo o ambiente dev (todos os dados são apagados inclusive do banco e o ambiente todo é reconstruido)
-resolve:
+resolve: 
 	sudo rm -rf ./postgres-data
+	sudo rm -rf ./portal-aulas-api/media/*
 	mkdir ./postgres-data
 	docker rm -f portal-aulas-api
 	docker rm -f portal-aulas-database
@@ -30,4 +31,10 @@ api:
 
 db:
 	docker-compose up db
+
+makemigrate:
+	docker exec -it portal-aulas-api sh -c "python /app/manage.py makemigrations && python /app/manage.py migrate"
+
+makemigrate_merge:
+	docker exec -it portal-aulas-api sh -c "python /app/manage.py makemigrations --merge && python /app/manage.py migrate"
 
